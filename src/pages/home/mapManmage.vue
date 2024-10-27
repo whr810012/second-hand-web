@@ -18,9 +18,9 @@
 </template>
 
 <script>
-import Mapview from "../../components/MapContainer.vue";
-import OptionsManage from "../../components/OptionsManage.vue";
-import MarksManage from "../../components/MarksManage.vue"
+import Mapview from "../../components/mapmanage/MapContainer.vue";
+import OptionsManage from "../../components/mapmanage/OptionsManage.vue";
+import MarksManage from "../../components/mapmanage/MarksManage.vue"
 export default {
     name: 'homeIndex',
     components: {
