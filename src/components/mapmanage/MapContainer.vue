@@ -3,18 +3,26 @@
 </template>
 <script>
 import AMapLoader from "@amap/amap-jsapi-loader";
-
+import { getOptions, getMarkers } from "../../api/request.js";
 export default {
   name: "map-view",
+  data() {
+    return {
+      optionsList: []
+    }
+  },
   mounted() {
     this.initAMap();
   },
   unmounted() {
     this.map?.destroy();
   },
-  created() {
+  async created() {
     this.$store.commit("setBreadList", [{ title: '地图管理' }, { title: '预览' }]);
     console.log('asd', this.$store.state.location);
+    await getMarkers().then((res) => {
+      this.markersList = res.data.data
+    })
   },
   methods: {
     initAMap() {
@@ -68,6 +76,23 @@ export default {
             title: "临沂大学",
           });
           this.map.add(marker);
+          getOptions().then((res) => {
+            this.optionsList = res.data.data
+            console.log('zuobiap', this.optionsList);
+            let path = []
+            that.optionsList.map(iem => {
+              path.push(new AMap.LngLat(iem.lat, iem.lng))
+            })
+            var polygon = new AMap.Polygon({
+              path: path,
+              fillColor: '#fff', // 多边形填充颜色
+              borderWeight: 2, // 线条宽度，默认为 1
+              strokeColor: 'red', // 线条颜色
+            });
+
+            this.map.add(polygon);
+            console.log(this.map);
+          })
         })
         .catch((e) => {
           console.log(e);
