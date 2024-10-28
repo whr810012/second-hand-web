@@ -4,7 +4,8 @@ import { createStore } from 'vuex';
 const store = createStore({
   state: {
     crumbList:[],
-    location:{}
+    location:{},
+    MyInfo:{}
   },
   getters: {
   },
@@ -14,6 +15,9 @@ const store = createStore({
     },
     updateLocation (state, data) {
       state.location = data
+    },
+    setUserInfo (state, data) {
+      state.MyInfo = data
     }
   },
   actions: {

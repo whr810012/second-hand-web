@@ -508,12 +508,26 @@ app.post("/register", async (req, res) => {
     const uid = Math.floor(Math.random() * 1000000) + new Date().getTime();
     const sql1 = `INSERT INTO admin (username, password, uid) VALUES (?, ?, ?)`;
     const result1 = await executeQuery(sql1, [username, password, uid]);
+    const sql2 = `INSERT INTO user (name, img, uid) VALUES (?, ?, ?)`;
+    const result2 = await executeQuery(sql2, ['用户', '', uid]);
     res.status(200).json({ message: "注册成功", data: result1 });
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).send("Internal Server Error");
   }
 });
+
+app.post('/getMyInfo',async (req, res) => {
+  try {
+    const { uid } = req.body;
+    const sql = `SELECT * FROM user WHERE uid = ?`;
+    const result = await executeQuery(sql, [uid]);
+    res.status(200).json({ message: "获取成功", data: result });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+})
 
 app.listen("3000", () => {
   console.log(`node服务已启动 端口号是：3000`);

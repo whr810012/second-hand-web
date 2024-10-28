@@ -78,3 +78,11 @@ export function Register (data) {
     data
   })
 }
+
+export function getMyInfo (data) {
+  return request({
+    url:"/getMyInfo",
+    method:"POST",
+    data
+  })
+}

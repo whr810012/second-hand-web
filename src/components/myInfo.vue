@@ -1,9 +1,9 @@
 <template>
     <div class="myInfo">
-        <el-image :src="require('../menu/menuLogo.png')"></el-image>
-        <el-dropdown v-if="true" style="display: flex;align-items: center;">
+        <el-image v-if="myInfo" :src="myInfo && myInfo.img ? myInfo.img : require('../menu/menuLogo.png')"></el-image>
+        <el-dropdown v-if="myInfo" style="display: flex;align-items: center;">
             <span class="el-dropdown-link">
-                <span style="color: white;">用户名</span>
+                <span style="color: white;">{{ MyInfo.name ? MyInfo.name : '未登录'}}</span>
                 <el-icon class="el-icon--right" style="color: white;">
                     <arrow-down />
                 </el-icon>
@@ -15,7 +15,7 @@
                 </el-dropdown-menu>
             </template>
         </el-dropdown>
-        <span v-else class="gotologin">
+        <span v-else class="gotologin" @click="gotologin">
             登录 | 注册
         </span>
     </div>
@@ -23,7 +23,22 @@
 
 <script>
 export default {
-    name: 'myInfo'
+    name: 'myInfo',
+    computed:{
+        // MyInfo() {
+        //     return this.$store.state.MyInfo
+        // }
+    },
+    methods:{
+        gotologin() {
+            this.$router.push({name:'login'})
+        }
+    },
+    created() {
+        this.MyInfo = this.$store.state.MyInfo
+        console.log('myInfo',this.MyInfo);
+        console.log(this.MyInfo.name);
+    }
 }
 </script>
 

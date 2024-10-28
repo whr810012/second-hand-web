@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { Login } from '@/api/request.js'
+import { Login, getMyInfo } from '@/api/request.js'
 export default {
   name: 'loginIndex',
   data() {
@@ -53,8 +53,12 @@ export default {
         }
         Login({username:this.form.username, password:this.form.password}).then(res => {
           this.$message.success('登录成功')
-          this.$router.push({path:'/map'})
-        }).catch(err => {
+          console.log('登录成功',res.data);
+          getMyInfo({uid:res.data.data.uid}).then(res =>{
+            this.$store.commit('setUserInfo', res.data.data)
+            this.$router.push({path:'/map'})
+          })
+        }).catch(() => {
           this.$message.error('邮箱/密码错误')
         })
       }
