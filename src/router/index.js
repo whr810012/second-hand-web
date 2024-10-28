@@ -4,6 +4,7 @@ import store from "../store";
 import Login from '../pages/login.vue'
 import Home from "@/pages/home.vue";
 import mapManage from "@/pages/home/mapManmage.vue";
+import Register from '../pages/register.vue'
 
 // 定义路由
 const routes = [
@@ -11,6 +12,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: Login,
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: Register,
   },
   {
     path: "/",
