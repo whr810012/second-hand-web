@@ -26,10 +26,7 @@
 </template>
 
 <script>
-// import { defineComponent, ref, reactive, toRefs, onBeforeMount, onMounted, isReactive} from 'vue'
-// import { useLayoutStore } from '@/store/modules/layout';
-// import router from '../router'
-// interface DataProps {}
+import { Login } from '@/api/request.js'
 export default {
   name: 'loginIndex',
   data() {
@@ -54,30 +51,16 @@ export default {
           this.$message.warning('请输入密码')
           return
         }
-        Login(this.form.username, this.form.password)
+        Login({username:this.form.username, password:this.form.password}).then(res => {
+          this.$message.success('登录成功')
+          this.$router.push({path:'/map'})
+        }).catch(err => {
+          this.$message.error('邮箱/密码错误')
+        })
       }
     }
   }
-  // setup() {
-  //   // const layoutStore = useLayoutStore()
-  //   const form = reactive({
-  //     username:'',
-  //     password:''
-  //   })
-  //   const onSubmit = async()=>{
-  //     const { username, password }  = form
-  //     layoutStore.doLogin({username,password}).then(()=>{
-  //          console.log('登录成功',layoutStore.getStatus.ACCESS_TOKEN)
-  //          router.push({ path: '/' })
-  //     }).catch(e=>{
-  //         console.log(e)
-  //     })
-  //   }
-  //   return {
-  //       form,onSubmit
-  //   }
-  // }
-};
+}
 </script>
 
 <style lang='scss' scoped>

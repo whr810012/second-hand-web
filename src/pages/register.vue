@@ -22,12 +22,9 @@
 </template>
 
 <script>
-// import { defineComponent, ref, reactive, toRefs, onBeforeMount, onMounted, isReactive} from 'vue'
-// import { useLayoutStore } from '@/store/modules/layout';
-// import router from '../router'
-// interface DataProps {}
+import { Register } from '@/api/request'
 export default {
-    name: 'loginIndex',
+    name: 'registerIndex',
     data() {
         return {
             form: {
@@ -45,28 +42,14 @@ export default {
                 this.$message.warning('请输入密码')
                 return
             }
-            Register(this.form)
+            Register(this.form).then(res => {
+                this.$message.success('注册成功')
+            }).catch(err => {
+                console.log(err);
+                this.$message.error(err.data.message)
+            })
         }
     }
-    // setup() {
-    //   // const layoutStore = useLayoutStore()
-    //   const form = reactive({
-    //     username:'',
-    //     password:''
-    //   })
-    //   const onSubmit = async()=>{
-    //     const { username, password }  = form
-    //     layoutStore.doLogin({username,password}).then(()=>{
-    //          console.log('登录成功',layoutStore.getStatus.ACCESS_TOKEN)
-    //          router.push({ path: '/' })
-    //     }).catch(e=>{
-    //         console.log(e)
-    //     })
-    //   }
-    //   return {
-    //       form,onSubmit
-    //   }
-    // }
 };
 </script>
 

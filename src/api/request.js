@@ -62,3 +62,19 @@ export function deleteMarkers(data) {
     data
   })
 }
+
+export function Login (data) {
+  return request({
+    url:"/login",
+    method:"POST",
+    data
+  })
+}
+
+export function Register (data) {
+  return request({
+    url:"/register",
+    method:"POST",
+    data
+  })
+}
