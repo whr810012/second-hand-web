@@ -6,9 +6,17 @@ import Home from "@/pages/home.vue";
 import mapManage from "@/pages/home/mapManmage.vue";
 import Register from '../pages/register.vue'
 import userMangae from "../pages/home/userMangae.vue"
+import goodsManage from "../pages/home/goodsManage.vue"
+import statisticsManage from "../pages/home/statisticsManage.vue"
+import GoodsIndex from "@/pages/goods.vue"
 
 // 定义路由
 const routes = [
+  {
+    path: '/',
+    name:'/',
+    redirect: "/goods",
+  },
   {
     path: "/login",
     name: "login",
@@ -20,8 +28,8 @@ const routes = [
     component: Register,
   },
   {
-    path: "/",
-    name: "/",
+    path: "/admin",
+    name: "/admin",
     component: Home,
     meta: { requiresAuth: true },
     redirect: { name: "map" },
@@ -37,9 +45,25 @@ const routes = [
         name:'user',
         component:userMangae,
         meta: { requiresAuth: true }
+      },
+      {
+        path:'goods-manage',
+        name:'goods-manage',
+        component:goodsManage,
+        meta: { requiresAuth: true }
+      },{
+        path:'statistics',
+        name:'statistics',
+        component:statisticsManage,
+        meta: { requiresAuth: true }
       }
     ],
   },
+  {
+    path: "/goods",
+    name: "/goods",
+    component: GoodsIndex
+  }
 ];
 
 // 创建路由实例

@@ -51,7 +51,7 @@ export default {
           this.$message.warning('请输入密码')
           return
         }
-        Login({username:this.form.username, password:this.form.password}).then(res => {
+        Login({username:this.form.username, password:this.form.password}).then(() => {
           this.$message.success('登录成功')
           console.log('登录成功',res.data);
           getMyInfo({uid:res.data.data.uid}).then(res =>{
