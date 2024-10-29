@@ -487,7 +487,7 @@ app.post("/Location/deletemarkers", async (req, res) => {
 app.post("/login", async (req, res) => {
   console.log(req.body);
   const { username, password } = req.body;
-  const sql = `SELECT * FROM admin WHERE username = ? AND password = ?`;
+  const sql = `SELECT * FROM user WHERE username = ? AND password = ?`;
   const result = await executeQuery(sql, [username, password]);
   console.log(result);
   if (result.length > 0) {
@@ -500,16 +500,15 @@ app.post("/register", async (req, res) => {
   try {
     const { username, password } = req.body;
     // 查询数据库是否有username相同的记录
-    const sql = `SELECT * FROM admin WHERE username = ?`;
+    const sql = `SELECT * FROM user WHERE username = ?`;
     const result = await executeQuery(sql, [username]);
     if (result.length > 0) {
       return res.status(409).json({ message: "用户已存在" });
     }
     const uid = Math.floor(Math.random() * 1000000) + new Date().getTime();
-    const sql1 = `INSERT INTO admin (username, password, uid) VALUES (?, ?, ?)`;
-    const result1 = await executeQuery(sql1, [username, password, uid]);
-    const sql2 = `INSERT INTO user (name, img, uid) VALUES (?, ?, ?)`;
-    const result2 = await executeQuery(sql2, ['用户', '', uid]);
+    const time = new Date();
+    const sql1 = `INSERT INTO user (username, password, uid, name, img, time) VALUES (?, ?, ?, ?, ?, ?)`;
+    const result1 = await executeQuery(sql1, [username, password, uid, '用户', '', time]);
     res.status(200).json({ message: "注册成功", data: result1 });
   } catch (error) {
     console.error("Error executing query:", error);
@@ -527,6 +526,31 @@ app.post('/getMyInfo',async (req, res) => {
     console.error("Error executing query:", error);
     res.status(500).send("Internal Server Error");
   }
+})
+
+app.post('/changeuser', async(req, res) => {
+  try {
+    const {username, password, name, age, xingbie, telephone, isadmin, uid } = req.body
+    console.log(username, password, name, age, xingbie, telephone, isadmin, uid);
+    const sql = `UPDATE user SET username = ?, password = ?, name = ?, age = ?, xingbie = ?, telephone = ?, isadmin = ? WHERE uid = ?`;
+    const result = await executeQuery(sql, [username, password, name, age, xingbie, telephone, isadmin, uid]);
+    res.status(200).json({ message: "修改成功", data: result });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+})
+
+app.post('/deleteuser', async(req, res) => {
+  try {
+    const { uid } = req.body
+    const sql = `DELETE FROM user WHERE uid = ?`;
+    const result = await executeQuery(sql, [uid]);
+    res.status(200).json({ message: "删除成功", data: result });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+    }
 })
 
 app.listen("3000", () => {

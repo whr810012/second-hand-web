@@ -9,6 +9,7 @@ import userMangae from "../pages/home/userMangae.vue"
 import goodsManage from "../pages/home/goodsManage.vue"
 import statisticsManage from "../pages/home/statisticsManage.vue"
 import GoodsIndex from "@/pages/goods.vue"
+import MyInfo from "@/pages/myInfo.vue";
 
 // 定义路由
 const routes = [
@@ -56,6 +57,11 @@ const routes = [
         name:'statistics',
         component:statisticsManage,
         meta: { requiresAuth: true }
+      },
+      {
+        path: "myInfo",
+        name: "myInfo",
+        component: MyInfo
       }
     ],
   },

@@ -86,3 +86,27 @@ export function getMyInfo (data) {
     data
   })
 }
+
+export function getUser (data) {
+  return request({
+    url:"/getuser",
+    method:"get",
+    data
+  })
+}
+
+export function changeUser(data) {
+  return request({
+    url:"/changeuser",
+    method:"POST",
+    data
+  })
+}
+
+export function deleteUser(data) {
+  return request({
+    url:"/deleteuser",
+    method:"POST",
+    data
+  })
+}

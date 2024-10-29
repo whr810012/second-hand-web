@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { Login, getMyInfo } from '@/api/request.js'
+import { Login } from '@/api/request.js'
 export default {
   name: 'loginIndex',
   data() {
@@ -51,13 +51,15 @@ export default {
           this.$message.warning('请输入密码')
           return
         }
-        Login({username:this.form.username, password:this.form.password}).then(() => {
+        Login({username:this.form.username, password:this.form.password}).then(res => {
           this.$message.success('登录成功')
           console.log('登录成功',res.data);
-          getMyInfo({uid:res.data.data.uid}).then(res =>{
-            this.$store.commit('setUserInfo', res.data.data)
-            this.$router.push({path:'/map'})
-          })
+          this.$store.commit('setUserInfo', res.data.data)
+          if (res.data.data.isadmin) {
+            this.$router.push({path:'/admin'})
+          } else {
+            this.$router.push({path:'/goods'})
+          }
         }).catch(() => {
           this.$message.error('邮箱/密码错误')
         })
