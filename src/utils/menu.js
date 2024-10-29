@@ -12,7 +12,7 @@ const menu = [
     iconActive: require('@/menu/usercenter-active.png'),
   },
   {
-    index:'goods',
+    index:'goods-manage',
     title:'商品管理',
     icon:require('@/menu/product.png'),
     iconActive:require('@/menu/product-active.png'),

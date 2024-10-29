@@ -13,6 +13,11 @@ import GoodsIndex from "@/pages/goods.vue"
 // 定义路由
 const routes = [
   {
+    path: '/',
+    name:'/',
+    redirect: "/goods",
+  },
+  {
     path: "/login",
     name: "login",
     component: Login,
@@ -42,8 +47,8 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
-        path:'goods',
-        name:'goods',
+        path:'goods-manage',
+        name:'goods-manage',
         component:goodsManage,
         meta: { requiresAuth: true }
       },{
@@ -55,19 +60,9 @@ const routes = [
     ],
   },
   {
-    path: "/",
-    name: "/",
-    component: GoodsIndex,
-    meta: { requiresAuth: true },
-    redirect: { name: "goods" },
-    children:[
-      {
-        path:'goods',
-        name:'goods',
-        component:GoodsIndex,
-        meta: { requiresAuth: true }
-      }
-    ]
+    path: "/goods",
+    name: "/goods",
+    component: GoodsIndex
   }
 ];
 
