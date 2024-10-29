@@ -42,7 +42,7 @@ export default {
                 this.$message.warning('请输入密码')
                 return
             }
-            Register(this.form).then(res => {
+            Register(this.form).then(() => {
                 this.$message.success('注册成功')
             }).catch(err => {
                 console.log(err);

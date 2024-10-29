@@ -51,10 +51,10 @@ export default {
           this.$message.warning('请输入密码')
           return
         }
-        Login({username:this.form.username, password:this.form.password}).then(res => {
+        Login({username:this.form.username, password:this.form.password}).then(() => {
           this.$message.success('登录成功')
           this.$router.push({path:'/map'})
-        }).catch(err => {
+        }).catch(() => {
           this.$message.error('邮箱/密码错误')
         })
       }

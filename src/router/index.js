@@ -8,6 +8,7 @@ import Register from '../pages/register.vue'
 import userMangae from "../pages/home/userMangae.vue"
 import goodsManage from "../pages/home/goodsManage.vue"
 import statisticsManage from "../pages/home/statisticsManage.vue"
+import GoodsIndex from "@/pages/goods.vue"
 
 // 定义路由
 const routes = [
@@ -53,6 +54,21 @@ const routes = [
       }
     ],
   },
+  {
+    path: "/",
+    name: "/",
+    component: GoodsIndex,
+    meta: { requiresAuth: true },
+    redirect: { name: "goods" },
+    children:[
+      {
+        path:'goods',
+        name:'goods',
+        component:GoodsIndex,
+        meta: { requiresAuth: true }
+      }
+    ]
+  }
 ];
 
 // 创建路由实例
