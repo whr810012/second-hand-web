@@ -22,8 +22,8 @@ const routes = [
     component: Register,
   },
   {
-    path: "/",
-    name: "/",
+    path: "/admin",
+    name: "/admin",
     component: Home,
     meta: { requiresAuth: true },
     redirect: { name: "map" },
