@@ -6,6 +6,8 @@ import Home from "@/pages/home.vue";
 import mapManage from "@/pages/home/mapManmage.vue";
 import Register from '../pages/register.vue'
 import userMangae from "../pages/home/userMangae.vue"
+import goodsManage from "../pages/home/goodsManage.vue"
+import statisticsManage from "../pages/home/statisticsManage.vue"
 
 // 定义路由
 const routes = [
@@ -36,6 +38,17 @@ const routes = [
         path:'user',
         name:'user',
         component:userMangae,
+        meta: { requiresAuth: true }
+      },
+      {
+        path:'goods',
+        name:'goods',
+        component:goodsManage,
+        meta: { requiresAuth: true }
+      },{
+        path:'statistics',
+        name:'statistics',
+        component:statisticsManage,
         meta: { requiresAuth: true }
       }
     ],
