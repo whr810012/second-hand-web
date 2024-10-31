@@ -1,8 +1,18 @@
 <template>
   <div style="padding: 40px 20px 0 20px">
     <el-card style="width: 480px" shadow="hover">
-      <el-image :src="require('../menu/menuLogo.png')"
-        style="width: 100px;height:100px;margin-bottom: 20px;border-radius: 50%;border:4px solid #f1f1f1"></el-image>
+      <el-upload
+        class="avatar-uploader"
+        action="http://localhost:3000/upLoadImage"
+        :data="formData"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+        style="background-color: aliceblue;width:100px;height:100px;display: flex;justify-content: center;align-items: center;"
+      >
+        <img v-if="url" style="width: 100px;height:100px;font-size: 60px;" :src="url" class="avatar" />
+        <el-icon v-else style="width: 60px;height:60px;font-size: 60px;" class="avatar-uploader-icon"><Plus /></el-icon>
+      </el-upload>
       <el-form>
         <el-form-item label="昵称" :label-width="formLabelWidth">
           {{ this.form.name }}
@@ -50,7 +60,15 @@ export default {
   data() {
     return {
       form: {},
-      show: false
+      show: false,
+      url:""
+    }
+  },
+  computed:{
+    formData(){
+      return{
+        uid: this.$store.state.MyInfo.uid
+      }
     }
   },
   methods: {
@@ -61,15 +79,35 @@ export default {
       changeUser(this.changeForm).then(() => {
         this.show = false
         this.$message.success('修改成功')
-        this.getMyInfo({ uid: this.$store.state.MyInfo.uid }).then(res => {
-          this.$store.commit('setUserInfo', res.data.data[0])
+        getMyInfo({ uid: this.$store.state.MyInfo.uid }).then(res => {
+          const data = res.data.data[0]
+          if (data.img){
+            data.img = JSON.parse(data.img)
+          }
+          this.$store.commit('setUserInfo', data)
         })
       })
+    },
+    handleAvatarSuccess(res){
+      console.log(res);
+      getMyInfo({ uid: this.$store.state.MyInfo.uid }).then(res => {
+          const data = res.data.data[0]
+          if (data.img){
+            data.img = JSON.parse(data.img)
+          }
+          this.$store.commit('setUserInfo', data)
+        })
     }
   },
   created() {
     getMyInfo({ uid: this.$store.state.MyInfo.uid }).then(res => {
       this.form = res.data.data[0]
+      if (this.form.img) {
+        // 将json转换成对象
+        this.form.img = JSON.parse(this.form.img)
+        const mimeType = this.form.img.contentType
+        this.url = `data:${mimeType};base64,${this.form.img.base64}`;
+      }
       console.log(this.form);
     })
   }

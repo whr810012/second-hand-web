@@ -1,6 +1,6 @@
 <template>
     <div class="MyInfo" v-if="isready">
-        <el-image v-if="MyInfo.name" :src="MyInfo && MyInfo.img ? MyInfo.img : require('../menu/menuLogo.png')"></el-image>
+        <el-image v-if="MyInfo.name" :src="url  ? url : require('../menu/menuLogo.png')"></el-image>
         <el-dropdown v-if="MyInfo.name" style="display: flex;align-items: center;">
             <span class="el-dropdown-link">
                 <span style="color: white;">{{ MyInfo.name ? MyInfo.name : '未登录'}}</span>
@@ -27,7 +27,8 @@ export default {
     data() {
         return {
             MyInfo:{},
-            isready: false
+            isready: false,
+            url:""
         }
     },
     methods:{
@@ -41,6 +42,11 @@ export default {
     },
     created() {
         this.MyInfo = this.$store.state.MyInfo
+        if(this.MyInfo.img) {
+        const mimeType = this.MyInfo.img.contentType
+        this.url = `data:${mimeType};base64,${this.MyInfo.img.base64}`;
+        console.log(this.MyInfo);
+        }
         this.isready = true
     }
 }

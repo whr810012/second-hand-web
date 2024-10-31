@@ -53,8 +53,13 @@ export default {
         }
         Login({username:this.form.username, password:this.form.password}).then(res => {
           this.$message.success('登录成功')
-          console.log('登录成功',res.data);
-          this.$store.commit('setUserInfo', res.data.data)
+          console.log('登录成功',res.data.data);
+          const data = res.data.data
+          if (data.img) {
+            // 将json转换成对象
+            data.img = JSON.parse(data.img)
+          }
+          this.$store.commit('setUserInfo', data)
           if (res.data.data.isadmin) {
             this.$router.push({path:'/admin'})
           } else {

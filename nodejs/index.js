@@ -553,6 +553,35 @@ app.post('/deleteuser', async(req, res) => {
     }
 })
 
+app.post('/upLoadImage', upload.array("file"), async (req, res) => {
+  try {
+    const file = req.files[0];
+    if (!file) {
+      return res.status(400).send("No file uploaded.");
+    }
+
+    const sql = `UPDATE user SET img = ? WHERE uid = ?`;
+    const filePath = path.resolve(file.path);
+    const fileBuffer = await fs.promises.readFile(filePath);
+    
+    const img = {
+      originalname: file.originalname,
+      base64: fileBuffer.toString("base64"),
+      contentType: file.mimetype,
+    };
+    const imgJson = JSON.stringify(img)
+    const result = await executeQuery(sql, [imgJson, req.body.uid]);
+    // 清空uploads文件
+    fs.readdirSync("uploads").forEach((file) => {
+      fs.unlinkSync(`uploads/${file}`);
+    });
+    res.status(200).json({ message: "上传成功", data: result });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.listen("3000", () => {
   console.log(`node服务已启动 端口号是：3000`);
 });
