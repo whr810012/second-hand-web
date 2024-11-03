@@ -32,6 +32,18 @@
           {{ this.options.find(option => option.value === scope.row.category).label }}
         </template>
       </el-table-column>
+      <el-table-column prop="address" label="交易地址" align="center">
+        <template #default="scope">
+          <el-popover placement="top-start" title="交易地址" trigger="hover">
+            <span>
+              {{ scope.row.address }}
+            </span>
+            <template #reference>
+              <div class="description">{{ scope.row.address }}</div>
+            </template>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column prop="description" label="商品描述" align="center">
         <template #default="scope">
           <el-popover placement="top-start" title="商品描述" trigger="hover">
@@ -81,8 +93,8 @@ export default {
         { value: 3, label: '订单交易中' },
         { value: 4, label: '已售出' }
       ],
-      goods:{},
-      show:false,
+      goods: {},
+      show: false,
     }
   },
   methods: {
@@ -103,7 +115,7 @@ export default {
         })
       })
     },
-    edit(row){
+    edit(row) {
       this.goods = row
       this.show = true
     },

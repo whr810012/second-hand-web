@@ -678,7 +678,7 @@ app.post("/goods/upload", upload.array("files"), async (req, res) => {
     // 生成一个随机id
     const goodsId = Math.floor(Math.random() * 1000000) + new Date().getTime();
     const createTime = new Date().getTime();
-    const { name, price, discount, category, condition, description, uid } =
+    const { name, price, discount, category, condition, description, uid, address, lat, lng } =
       req.body;
     const status = 0;
     // 检查是否有文件上传
@@ -697,8 +697,8 @@ app.post("/goods/upload", upload.array("files"), async (req, res) => {
       : [];
     // 将filesBase64转换为json
     const filesJson = JSON.stringify(filesBase64);
-    const sql = `INSERT INTO goods (goodsId, name, status, price, discount, category, \`condition\`, description, uid, filesJson, createTime) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`; //sql语句 搜索test表所有数据
+    const sql = `INSERT INTO goods (goodsId, name, status, price, discount, category, \`condition\`, description, uid, filesJson, createTime, address, lat, lng) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`; //sql语句 搜索test表所有数据
     const result = await executeQuery(sql, [
       goodsId,
       name,
@@ -711,6 +711,9 @@ app.post("/goods/upload", upload.array("files"), async (req, res) => {
       uid,
       filesJson,
       createTime,
+      address, 
+      lat, 
+      lng
     ]);
     // 清空uploads文件
     fs.readdirSync("uploads").forEach((file) => {

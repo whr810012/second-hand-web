@@ -26,7 +26,7 @@
                         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="成色">
+                <el-form-item label="成色:">
                     <el-select v-model="form.condition" placeholder="请选择商品成色" style="width: 240px">
                         <el-option v-for="item in options2" :key="item" :label="item" :value="item" />
                     </el-select>
@@ -40,6 +40,15 @@
                             一键生成商品描述
                         </el-button>
                     </div>
+                </el-form-item>
+                <el-form-item label="交易地点:">
+                    <el-autocomplete style="width: 400px;" class="inline-input" v-model="searchWords"
+                        :fetch-suggestions="fetchSuggestions" placeholder="请输入内容" :trigger-on-focus="false"
+                        @select="handleSelect"></el-autocomplete>
+                </el-form-item>
+                <el-form-item label="详细地址:">
+                    <el-input v-model="form.address" style="width: 400px" :disabled="form.address === ''"></el-input>
+                    {{ form.address }}
                 </el-form-item>
                 <el-form-item label="图片:">
                     <el-upload action="#" v-model:file-list="form.image" :auto-upload="false" limit="4"
@@ -65,12 +74,15 @@
 
 <script>
 import { sendAi, uploadGoods } from '@/api/request'
+import AMapLoader from '@amap/amap-jsapi-loader';
 export default {
     name: 'uploadGoods',
     data() {
         return {
+            searchWords: '',
             loading: false,
             imageshow: false,
+            showMap: false,
             form: {
                 name: '',
                 price: '',
@@ -78,7 +90,10 @@ export default {
                 category: '',
                 condition: '',
                 description: '',
-                image: []
+                image: [],
+                address: "",
+                lat: '',
+                lng: ''
             },
             options: [
                 { label: '书籍', value: 'book' },
@@ -95,6 +110,56 @@ export default {
         }
     },
     methods: {
+        fetchSuggestions(query, callback) {
+            // 清空列表
+            this.list = [];
+
+            window._AMapSecurityConfig = {
+                securityJsCode: "638210509d7b98e8c4ca472ab5110203",
+            };
+
+            AMapLoader.load({
+                key: 'a05ab04a5dbe61ad2fad7b664790a18f',
+                version: '2.0',
+                plugins: ['AMap.AutoComplete'],
+            }).then((AMap) => {
+                AMap.plugin('AMap.AutoComplete', () => {
+                    const autoOptions = {
+                        city: '全国', // 限定城市，默认全国
+                    };
+
+                    // 实例化 AutoComplete
+                    const autoComplete = new AMap.AutoComplete(autoOptions);
+                    // 根据关键字进行搜索
+                    autoComplete.search(query, (status, result) => {
+                        if (status === 'complete' && result && result.tips) {
+                            console.log(result.tips);
+                            // 将结果传给 callback
+                            callback(result.tips.map(item => {
+                                return {
+                                    value: item.name,
+                                    address: item.district + item.address + item.name,
+                                    location: item.location,
+                                };
+                            }));
+                        } else {
+                            // 如果没有找到建议，传递一个空数组
+                            callback([]);
+                        }
+                    });
+                });
+            }).catch(error => {
+                console.error('加载 AMap 失败:', error);
+                // 发生错误时也传递空数组
+                callback([]);
+            });
+        },
+        handleSelect(item) {
+            console.log('选择的项:', item);
+            this.form.address = item.address
+            this.form.lat = item.location.lat
+            this.form.lng = item.location.lng
+        },
         sendAi() {
             this.loading = true
             sendAi(this.form)
@@ -155,7 +220,7 @@ export default {
             })
         }
     }
-    }
+}
 </script>
 
 <style>
