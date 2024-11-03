@@ -76,7 +76,17 @@ export default {
       this.show = true
     },
     change() {
-      changeUser(this.changeForm).then(() => {
+      const data = {
+        uid: this.$store.state.MyInfo.uid,
+        name: this.form.name,
+        xingbie: this.form.xingbie,
+        age: this.form.age,
+        telephone: this.form.telephone,
+        username: this.$store.state.MyInfo.username,
+        password: this.$store.state.MyInfo.password,
+        isadmin:this.$store.state.MyInfo.isadmin
+      }
+      changeUser(data).then(() => {
         this.show = false
         this.$message.success('修改成功')
         getMyInfo({ uid: this.$store.state.MyInfo.uid }).then(res => {
@@ -85,6 +95,9 @@ export default {
             data.img = JSON.parse(data.img)
           }
           this.$store.commit('setUserInfo', data)
+          localStorage.setItem('userInfo', JSON.stringify(data))
+          const mimeType = data.img.contentType
+          this.url = `data:${mimeType};base64,${data.img.base64}`;
         })
       })
     },
@@ -96,6 +109,9 @@ export default {
             data.img = JSON.parse(data.img)
           }
           this.$store.commit('setUserInfo', data)
+          localStorage.setItem('userInfo', JSON.stringify(data))
+          const mimeType = data.img.contentType
+          this.url = `data:${mimeType};base64,${data.img.base64}`;
         })
     }
   },

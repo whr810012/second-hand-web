@@ -76,6 +76,7 @@ export default {
 .header {
   background-color: aqua;
   height: 48px;
+  width: 100vw;
 }
 
 .el-main {

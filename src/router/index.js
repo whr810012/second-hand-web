@@ -10,6 +10,11 @@ import goodsManage from "../pages/home/goodsManage.vue"
 import statisticsManage from "../pages/home/statisticsManage.vue"
 import GoodsIndex from "@/pages/goods.vue"
 import MyInfo from "@/pages/myInfo.vue";
+import Shop from "../pages/goods/shop.vue"
+import uploadGoods from "../pages/goods/uploadGoods.vue"
+import myGoods from "../pages/goods/myGoods.vue"
+import schoolMap from "../components/mapmanage/MapContainer.vue"
+import goodsDetail from '../pages/goodsDetail.vue';
 
 // 定义路由
 const routes = [
@@ -62,13 +67,51 @@ const routes = [
         path: "myInfo",
         name: "myInfo",
         component: MyInfo
+      },
+      {
+        path:"goodsAdminDetail",
+        name:"goodsAdminDetail",
+        component:goodsDetail,
       }
     ],
   },
   {
     path: "/goods",
-    name: "/goods",
-    component: GoodsIndex
+    name: "goods",
+    component: GoodsIndex,
+    redirect: { name: "shop" },
+    children:[
+      {
+        path: "myInfo",
+        name: "myInfo",
+        component: MyInfo
+      },
+      {
+        path:"shop",
+        name:"shop",
+        component:Shop,
+      },
+      {
+        path:"uploadGoods",
+        name:"uploadGoods",
+        component:uploadGoods,
+      },
+      {
+        path:"myGoods",
+        name:"myGoods",
+        component:myGoods,
+      },
+      {
+        path:"schoolMap",
+        name:"schoolMap",
+        component:schoolMap,
+      },
+      {
+        path:"goodsDetail",
+        name:"goodsDetail",
+        component:goodsDetail,
+      }
+    ]
   }
 ];
 

@@ -110,3 +110,49 @@ export function deleteUser(data) {
     data
   })
 }
+
+export function sendAi(data){
+  return request({
+    url:"/ai/goods",
+    method:"POST",
+    data
+  })
+}
+
+export function uploadGoods (data) {
+  return axios({
+    url:"http://localhost:3000/goods/upload",
+    method:"POST",
+    data
+  })
+}
+
+export function getGoods () {
+  return request({
+    url:"/goods",
+    method:"GET"
+  })
+}
+
+export function deleteGoods (data) {
+  return request({
+    url:"/goods/delete",
+    method:"POST",
+    data
+  })
+}
+
+export function putGoods (data) {
+  return request({
+    url:"/goods/put",
+    method:"POST",
+    data
+  })
+}
+export function downGoods (data) {
+  return request({
+    url:"/goods/down",
+    method:"POST",
+    data
+  })
+}

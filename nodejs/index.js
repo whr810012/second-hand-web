@@ -19,7 +19,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // 使用 express.json() 中间件来解析 JSON 数据
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "https://192.168.0.169:8080");
+  res.setHeader("Access-Control-Allow-Origin", "https://localhost:8080");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
@@ -508,7 +508,14 @@ app.post("/register", async (req, res) => {
     const uid = Math.floor(Math.random() * 1000000) + new Date().getTime();
     const time = new Date();
     const sql1 = `INSERT INTO user (username, password, uid, name, img, time) VALUES (?, ?, ?, ?, ?, ?)`;
-    const result1 = await executeQuery(sql1, [username, password, uid, '用户', '', time]);
+    const result1 = await executeQuery(sql1, [
+      username,
+      password,
+      uid,
+      "用户",
+      null,
+      time,
+    ]);
     res.status(200).json({ message: "注册成功", data: result1 });
   } catch (error) {
     console.error("Error executing query:", error);
@@ -516,7 +523,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post('/getMyInfo',async (req, res) => {
+app.post("/getMyInfo", async (req, res) => {
   try {
     const { uid } = req.body;
     const sql = `SELECT * FROM user WHERE uid = ?`;
@@ -526,34 +533,53 @@ app.post('/getMyInfo',async (req, res) => {
     console.error("Error executing query:", error);
     res.status(500).send("Internal Server Error");
   }
-})
+});
 
-app.post('/changeuser', async(req, res) => {
+app.post("/changeuser", async (req, res) => {
   try {
-    const {username, password, name, age, xingbie, telephone, isadmin, uid } = req.body
-    console.log(username, password, name, age, xingbie, telephone, isadmin, uid);
+    const { username, password, name, age, xingbie, telephone, isadmin, uid } =
+      req.body;
+    console.log(
+      username,
+      password,
+      name,
+      age,
+      xingbie,
+      telephone,
+      isadmin,
+      uid
+    );
     const sql = `UPDATE user SET username = ?, password = ?, name = ?, age = ?, xingbie = ?, telephone = ?, isadmin = ? WHERE uid = ?`;
-    const result = await executeQuery(sql, [username, password, name, age, xingbie, telephone, isadmin, uid]);
+    const result = await executeQuery(sql, [
+      username,
+      password,
+      name,
+      age,
+      xingbie,
+      telephone,
+      isadmin,
+      uid,
+    ]);
     res.status(200).json({ message: "修改成功", data: result });
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).send("Internal Server Error");
   }
-})
+});
 
-app.post('/deleteuser', async(req, res) => {
+app.post("/deleteuser", async (req, res) => {
   try {
-    const { uid } = req.body
+    const { uid } = req.body;
     const sql = `DELETE FROM user WHERE uid = ?`;
     const result = await executeQuery(sql, [uid]);
     res.status(200).json({ message: "删除成功", data: result });
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).send("Internal Server Error");
-    }
-})
+  }
+});
 
-app.post('/upLoadImage', upload.array("file"), async (req, res) => {
+app.post("/upLoadImage", upload.array("file"), async (req, res) => {
   try {
     const file = req.files[0];
     if (!file) {
@@ -563,13 +589,13 @@ app.post('/upLoadImage', upload.array("file"), async (req, res) => {
     const sql = `UPDATE user SET img = ? WHERE uid = ?`;
     const filePath = path.resolve(file.path);
     const fileBuffer = await fs.promises.readFile(filePath);
-    
+
     const img = {
       originalname: file.originalname,
       base64: fileBuffer.toString("base64"),
       contentType: file.mimetype,
     };
-    const imgJson = JSON.stringify(img)
+    const imgJson = JSON.stringify(img);
     const result = await executeQuery(sql, [imgJson, req.body.uid]);
     // 清空uploads文件
     fs.readdirSync("uploads").forEach((file) => {
@@ -581,6 +607,193 @@ app.post('/upLoadImage', upload.array("file"), async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+app.post("/ai/goods", async (req, res) => {
+  const form = req.body;
+  console.log(req.body);
+
+  // 检查 form 对象是否存在以及必要字段是否有效
+  if (
+    !form ||
+    !form.name ||
+    !form.price ||
+    !form.discount ||
+    !form.category ||
+    !form.condition
+  ) {
+    return res.status(400).json({ error: "请求数据不完整" });
+  }
+  const options = [
+    { label: "书籍", value: "book" },
+    { label: "电子产品", value: "electronics" },
+    { label: "食品", value: "food" },
+    { label: "衣物", value: "clothes" },
+    { label: "家具", value: "furniture" },
+    { label: "化妆品", value: "cosmetics" },
+    { label: "运动器材", value: "sports" },
+    { label: "乐器", value: "instrument" },
+    { label: "其他", value: "other" },
+  ];
+  form.classLabel =
+    options.find((option) => option.value === form.category)?.label || "其他";
+
+  try {
+    const response = await axios.post(
+      "https://spark-api-open.xf-yun.com/v1/chat/completions",
+      {
+        model: "4.0Ultra",
+        messages: [
+          {
+            role: "user",
+            content: `现在有一件二手商品是${form.name},他的原价是${
+              form.price
+            },他的折扣是${(form.discount * 100) / 10}折,他的成色是${
+              form.condition
+            },他的分类是${
+              form.classLabel
+            },请帮我生成一段商品描述,只给我返回一段文字`,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization:
+            "Bearer " + "ygeZveEAgsJNMpuONGxs:MSHuBcWaCEjLIdAdGhkZ",
+        },
+      }
+    );
+
+    console.log(response.data.choices[0].message.content);
+    res
+      .status(200)
+      .json({ message: "获取成功", data: response.data.choices[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "内部服务器错误" });
+  }
+});
+
+app.post("/goods/upload", upload.array("files"), async (req, res) => {
+  try {
+    // 生成一个随机id
+    const goodsId = Math.floor(Math.random() * 1000000) + new Date().getTime();
+    const createTime = new Date().getTime();
+    const { name, price, discount, category, condition, description, uid } =
+      req.body;
+    const status = 0;
+    // 检查是否有文件上传
+    const filesBase64 = req.files
+      ? await Promise.all(
+          req.files.map(async (file) => {
+            const filePath = path.resolve(file.path);
+            const fileBuffer = await fs.promises.readFile(filePath);
+            return {
+              originalname: file.originalname,
+              base64: fileBuffer.toString("base64"),
+              contentType: file.mimetype,
+            };
+          })
+        )
+      : [];
+    // 将filesBase64转换为json
+    const filesJson = JSON.stringify(filesBase64);
+    const sql = `INSERT INTO goods (goodsId, name, status, price, discount, category, \`condition\`, description, uid, filesJson, createTime) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`; //sql语句 搜索test表所有数据
+    const result = await executeQuery(sql, [
+      goodsId,
+      name,
+      status,
+      price,
+      discount,
+      category,
+      condition,
+      description,
+      uid,
+      filesJson,
+      createTime,
+    ]);
+    // 清空uploads文件
+    fs.readdirSync("uploads").forEach((file) => {
+      fs.unlinkSync(`uploads/${file}`);
+    });
+    // 返回成功响应
+    res.status(200).json({
+      message: "添加成功",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/goods", async (req, res) => {
+  try {
+    const sql = `SELECT * FROM goods`; //sql语句 搜索test表所有数据
+    const result = await executeQuery(sql);
+    res.status(200).json({
+      message: "获取成功",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/goods/delete", async (req, res) => {
+  try {
+    const { ids } = req.body;
+    // 遍历ids进行删除
+    for (const id of ids) {
+      if (id) {
+        const sql = `DELETE FROM goods WHERE goodsId = ?`;
+        const result = await executeQuery(sql, [id]); //执行sql语句
+      }
+    }
+    res.status(200).json({ message: "删除成功", data: { status: "success" } });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/goods/put", async (req, res) => {
+  try {
+    const { ids } = req.body;
+    // 遍历ids进行删除
+    for (const id of ids) {
+      if (id) {
+        // 将status 变为1
+        const sql = `UPDATE goods SET status = 1 WHERE goodsId = ?`;
+        const result = await executeQuery(sql, [id]); //执行sql语句
+      }
+    }
+    res.status(200).json({ message: "上架成功", data: { status: "success" } });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// 下架
+app.post("/goods/down", async (req, res) => {
+  try {
+    const { ids } = req.body;
+    // 遍历ids进行删除
+    for (const id of ids) {
+      if (id) {
+        // 将status 变为1
+        const sql = `UPDATE goods SET status = 2 WHERE goodsId = ?`;
+        const result = await executeQuery(sql, [id]); //执行sql语句
+      }
+    }
+    res.status(200).json({ message: "下架成功", data: { status: "success" } });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+})
 
 app.listen("3000", () => {
   console.log(`node服务已启动 端口号是：3000`);

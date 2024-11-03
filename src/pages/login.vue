@@ -60,6 +60,7 @@ export default {
             data.img = JSON.parse(data.img)
           }
           this.$store.commit('setUserInfo', data)
+          localStorage.setItem('userInfo', JSON.stringify(data))
           if (res.data.data.isadmin) {
             this.$router.push({path:'/admin'})
           } else {

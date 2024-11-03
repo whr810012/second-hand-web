@@ -10,6 +10,13 @@ export default {
   // components: {
   //   Mapview
   // }
+  created() {
+    const userInfo = localStorage.getItem('userInfo')
+    if (userInfo) {
+      this.$store.commit('setUserInfo', JSON.parse(userInfo))
+    }
+
+  }
 }
 </script>
 

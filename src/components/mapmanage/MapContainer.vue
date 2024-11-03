@@ -18,7 +18,9 @@ export default {
     this.map?.destroy();
   },
   async created() {
-    this.$store.commit("setBreadList", [{ title: '地图管理' }, { title: '预览' }]);
+    if (this.$route.name !== 'schoolMap') {
+      this.$store.commit("setBreadList", [{ title: '地图管理' }, { title: '预览' }]);
+    }
     console.log('asd', this.$store.state.location);
     await getMarkers().then((res) => {
       this.markersList = res.data.data
@@ -60,6 +62,7 @@ export default {
               // data是具体的定位信息
               console.log('经纬度', data.position);
               that.$store.commit('updateLocation', data.position)
+              localStorage.setItem('myLocation', JSON.stringify(data.position))
             }
 
             function onError(data) {

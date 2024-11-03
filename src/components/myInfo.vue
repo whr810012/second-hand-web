@@ -11,6 +11,7 @@
             <template #dropdown>
                 <el-dropdown-menu>
                     <el-dropdown-item @click="gotoMyInfo">个人中心</el-dropdown-item>
+                    <el-dropdown-item @click="gotoGoods">去购物</el-dropdown-item>
                     <el-dropdown-item @click="gotoLogin">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
             </template>
@@ -31,13 +32,33 @@ export default {
             url:""
         }
     },
+    computed:{
+        userInfo(){
+            return this.$store.state.MyInfo
+        }
+    },
+    watch:{
+        userInfo(){
+            this.MyInfo = this.$store.state.MyInfo
+        if(this.MyInfo.img) {
+        const mimeType = this.MyInfo.img.contentType
+        this.url = `data:${mimeType};base64,${this.MyInfo.img.base64}`;
+        console.log(this.MyInfo);
+        }
+        this.isready = true
+        }
+    },
     methods:{
         gotoLogin() {
             this.$store.commit('setUserInfo',{})
+            localStorage.setItem('userInfo',JSON.stringify({}))
             this.$router.push({name:'login'})
         },
         gotoMyInfo(){
             this.$router.push({ name: `myInfo` })
+        },
+        gotoGoods(){
+            this.$router.push({ name: `goods` })
         }
     },
     created() {
