@@ -117,7 +117,7 @@ export default {
     },
     edit(row) {
       this.goods = row
-      this.show = true
+      this.$router.push(`GoodsEdit?goodsId=${row.goodsId}`)
     },
     async init() {
       const res = await getGoods()

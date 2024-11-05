@@ -50,6 +50,12 @@ export default {
       this.isCollapse = !this.isCollapse;
     }
   },
+  created() {
+    // 检查是否是管理员
+    if (!this.$store.state.MyInfo.admin) {
+      // this.$router.push("/goods");
+    }
+  }
 };
 </script>
 

@@ -34,6 +34,10 @@
                     <el-option v-for="item in options2" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
+            <el-form-item label="交易详细地址:">
+                    <el-input v-model="goodsDetail.address" style="width: 400px" :disabled="goodsDetail.address === ''"></el-input>
+                    {{ goodsDetail.address }}
+                </el-form-item>
             <el-form-item label="商品描述：">
                 <div style="display: flex;">
                     <el-input type="textarea" v-loading="loading" v-model="goodsDetail.description"
@@ -41,6 +45,7 @@
                     </el-input>
                 </div>
             </el-form-item>
+            
             <el-form-item label="图片:">
                 <el-upload action="#" v-model:file-list="goodsDetail.image" :auto-upload="false" limit="4"
                     list-type="picture-card" :on-preview="handlePictureCardPreview" :on-exceed="handleExceed"
@@ -108,7 +113,10 @@ export default {
         }
     },
     created() {
-        this.$store.commit('setBreadList', [{ title: '商品详情' }])
+        console.log(this.$route.name)
+        if (this.$route.name !== 'goodsDetail') {
+            this.$store.commit('setBreadList', [{ title: '商品详情' }])
+        }
         console.log(this.$route.query.goodsId);
         this.init()
     }
