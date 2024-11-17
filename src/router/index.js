@@ -16,6 +16,7 @@ import myGoods from "../pages/goods/myGoods.vue"
 import schoolMap from "../components/mapmanage/MapContainer.vue"
 import goodsDetail from '../pages/goodsDetail.vue';
 import editorGoods from "../pages/goods/editorGoods.vue"
+import buyGoods from "../pages/goods/buyGoods.vue"
 
 // 定义路由
 const routes = [
@@ -116,6 +117,11 @@ const routes = [
         path:"GoodsEdit",
         name:"GoodsEdit",
         component:editorGoods,
+      },
+      {
+        path:"buyGoods",
+        name:"buyGoods",
+        component:buyGoods,
       }
     ]
   }

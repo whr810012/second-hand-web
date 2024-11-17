@@ -156,3 +156,18 @@ export function downGoods (data) {
     data
   })
 }
+export function getGoodsDetail (data) {
+  return request({
+    url:"/goods/detail",
+    method:"POST",
+    data
+  })
+}
+
+export function editorGoods(data) {
+  return axios({
+    url: "http://localhost:3000/goods/updateGoods",
+    method: "POST",
+    data
+  })
+}

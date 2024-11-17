@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { sendAi, uploadGoods, getGoods } from '@/api/request'
+import { sendAi, editorGoods, getGoods } from '@/api/request'
 import AMapLoader from '@amap/amap-jsapi-loader';
 export default {
     name: 'editorGoods',
@@ -199,24 +199,31 @@ export default {
             else if (this.form.image.length === 0) {
                 return this.$message.warning('请上传商品图片')
             }
-            this.form.uid = this.$store.state.MyInfo.uid
+            console.log(this.form);
+            const newImg = this.form.image.filter(item => item.raw)
+            const oldImg = this.form.image.filter(item => !item.raw)
+            this.form.image = []
+            this.form.filesJson = ''
+            this.form.newImg = newImg
+            this.form.oldImg =  JSON.stringify(oldImg)
+            console.log(this.form)
             let formData = new FormData();
             let obj = { ...this.form };
             Object.keys(obj).forEach(key => {
                 formData.append(key, obj[key]);
             })
             // 确保 this.form.image 是一个数组并且存在
-            if (Array.isArray(this.form.image)) {
-                for (let i = 0; i < this.form.image.length; i++) {
-                    const file = this.form.image[i].raw; // 假设 raw 是一个有效的 File 对象
+            if (Array.isArray(this.form.newImg)) {
+                for (let i = 0; i < this.form.newImg.length; i++) {
+                    const file = this.form.newImg[i].raw; // 假设 raw 是一个有效的 File 对象
                     if (file) {
                         formData.append(`files`, file); // 使用数组形式或不同的字段名
                     }
                 }
             }
-            uploadGoods(formData).then(() => {
-                this.$message.success('上传成功')
-                this.$router.push('/goods')
+            editorGoods(formData).then(res =>{
+                this.$message.success('修改成功')
+                this.$router.push({name:'myGoods'})
             })
         }
     },

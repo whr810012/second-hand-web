@@ -678,8 +678,18 @@ app.post("/goods/upload", upload.array("files"), async (req, res) => {
     // 生成一个随机id
     const goodsId = Math.floor(Math.random() * 1000000) + new Date().getTime();
     const createTime = new Date().getTime();
-    const { name, price, discount, category, condition, description, uid, address, lat, lng } =
-      req.body;
+    const {
+      name,
+      price,
+      discount,
+      category,
+      condition,
+      description,
+      uid,
+      address,
+      lat,
+      lng,
+    } = req.body;
     const status = 0;
     // 检查是否有文件上传
     const filesBase64 = req.files
@@ -711,9 +721,9 @@ app.post("/goods/upload", upload.array("files"), async (req, res) => {
       uid,
       filesJson,
       createTime,
-      address, 
-      lat, 
-      lng
+      address,
+      lat,
+      lng,
     ]);
     // 清空uploads文件
     fs.readdirSync("uploads").forEach((file) => {
@@ -796,7 +806,97 @@ app.post("/goods/down", async (req, res) => {
     console.error("Error executing query:", error);
     res.status(500).send("Internal Server Error");
   }
-})
+});
+
+// 修改商品名称
+app.post("/goods/updateGoods", upload.array("files"), async (req, res) => {
+  try {
+    // 生成一个随机id
+    const {
+      address,
+      category,
+      condition,
+      createTime,
+      description,
+      discount,
+      goodsId,
+      lat,
+      lng,
+      name,
+      oldImg,
+      price,
+      status,
+      uid,
+    } = req.body;
+    // 检查是否有文件上传
+    const filesBase64 = req.files
+      ? await Promise.all(
+          req.files.map(async (file) => {
+            const filePath = path.resolve(file.path);
+            const fileBuffer = await fs.promises.readFile(filePath);
+            return {
+              originalname: file.originalname,
+              base64: fileBuffer.toString("base64"),
+              contentType: file.mimetype,
+            };
+          })
+        )
+      : [];
+    // 将filesBase64转换为json
+    const filesJson = JSON.stringify(filesBase64);
+    // 将oldfilesJson和filesJson合并
+    const newFile = JSON.parse(filesJson);
+    const oldFile = JSON.parse(oldImg);
+    const files = [...oldFile, ...newFile];
+    const filesJson2 = JSON.stringify(files);
+    const sql = `UPDATE goods SET  name = ?, status = ?, price = ?, discount = ?, category = ?, \`condition\` = ?, description = ?, uid = ?, filesJson = ?, createTime = ?, address = ?, lat = ?, lng=? WHERE goodsId = ?`; //sql语句 搜索test表所有数据
+    const result = await executeQuery(sql, [
+      name,
+      status,
+      price,
+      discount,
+      category,
+      condition,
+      description,
+      uid,
+      filesJson2,
+      createTime,
+      address,
+      lat,
+      lng,
+      goodsId,
+    ]);
+    // 清空uploads文件
+    fs.readdirSync("uploads").forEach((file) => {
+      fs.unlinkSync(`uploads/${file}`);
+    });
+
+    // 返回成功响应
+    res.status(200).json({
+      message: "修改成功",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// 商品详情
+app.post("/goods/detail", async (req, res) => {
+  try {
+    const { goodsId } =  req.body;
+    const sql = `SELECT * FROM goods WHERE goodsId = ?`; //sql语句 搜索test表所有数据
+    const result = await executeQuery(sql, [goodsId]);
+    res.status(200).json({
+      message: "查询成功",
+      data: result[0],
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 app.listen("3000", () => {
   console.log(`node服务已启动 端口号是：3000`);

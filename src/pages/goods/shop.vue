@@ -24,7 +24,7 @@
     </div>
     <div class="goods-box">
       <!-- {{ filterList }} -->
-      <el-card v-for="item in filterList" :key="item.goodsId" class="goods-card" style="width: 300px;height:180px">
+      <el-card v-for="item in filterList" :key="item.goodsId" class="goods-card" style="width: 300px;height:180px" @click="gotoBuy(item)">
         <el-image style="min-width: 50px;max-width:50px;height:100px" :src="item.image[0].url"></el-image>
         <div class="goods-info">
           <div class="goods-name">
@@ -52,6 +52,9 @@
         </div>
       </el-card>
     </div>
+    <div style="text-align: center; margin-top: 20px;display: flex;justify-content: center;" v-if="filterList.length > 10">
+      <el-pagination :current-page="currentPage" layout="total, prev, pager, next, jumper" :total="filterList.length"></el-pagination>
+    </div>
   </div>
 </template>
 
@@ -61,6 +64,7 @@ export default {
   name: 'shopHome',
   data() {
     return {
+      currentPage: 1,
       allGoodsList: [],
       searchName: '',
       options: [
@@ -119,8 +123,14 @@ export default {
           })
         }
       }
+      list = list.slice((this.currentPage - 1) * 10, this.currentPage * 10)
       console.log(list);
       return list;
+    }
+  },
+  methods: {
+    gotoBuy (item) {
+      this.$router.push('/goods/buyGoods?goodsId=' + item.goodsId)
     }
   },
   created() {
