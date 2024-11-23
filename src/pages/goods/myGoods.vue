@@ -5,7 +5,9 @@
       <el-tab-pane label="我的订单" name="second">
         <my-order></my-order>
       </el-tab-pane>
-      <el-tab-pane label="我买到的" name="third">我买到的</el-tab-pane>
+      <el-tab-pane label="我买到的" name="third">
+        <myBuyGoods></myBuyGoods>
+      </el-tab-pane>
     </el-tabs>
     <Goods v-if="activeName == 'first'"></Goods>
   </div>
@@ -14,11 +16,13 @@
 <script>
 import Goods from '@/components/goods/Goods'
 import MyOrder from '@/components/goods/MyOrder'
+import myBuyGoods from '@/components/goods/myBuyGoods'
 export default {
   name: 'myGoods',
   components:{
     Goods,
-    MyOrder
+    MyOrder,
+    myBuyGoods
   },
   data() {
     return {

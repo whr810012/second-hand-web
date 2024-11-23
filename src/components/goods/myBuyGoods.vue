@@ -1,7 +1,7 @@
 <template>
-    <div class="myorder">
-        <el-table :data="orderList" style="width: 100%">
-            <el-table-column type="index" label="序号" width="70" align="center"></el-table-column>
+    <div class="">
+        <el-table :data="buyList">
+            <el-table-column type="index" label="序号" width="60"></el-table-column>
             <el-table-column label="商品名" prop="goods.name"></el-table-column>
             <el-table-column property="price" label="商品原价" align="center">
                 <template #default="scope">
@@ -76,28 +76,17 @@
                     </el-popover>
                 </template>
             </el-table-column>
-            <el-table-column label="操作">
-                <template #default="scope">
-                    <div v-if="scope.row.status == 0">
-                        <el-button @click="save(scope.row)" type="text">成交</el-button>
-                        <el-button @click="refuse(scope.row)" type="text">拒绝</el-button>
-                    </div>
-                    <div v-if="scope.row.status == 1">
-                        <el-button @click="finish(scope.row)" type="text">完成订单</el-button>
-                    </div>
-                </template>
-            </el-table-column>
         </el-table>
     </div>
 </template>
 
 <script>
-import { getMyOrder, agreeOver, refuseOver, finishOver } from '../../api/request'
 import dayjs from 'dayjs'
+import { getMyBuyGoods } from '../../api/request'
 export default {
     data() {
         return {
-            orderList: [],
+            buyList: [],
             options: [
                 { label: '书籍', value: 'book' },
                 { label: '电子产品', value: 'electronics' },
@@ -126,52 +115,14 @@ export default {
     },
     methods: {
         init() {
-            getMyOrder({ uid: this.$store.state.MyInfo.uid }).then(res => {
-                console.log(res.data.data);
-                this.orderList = res.data.data
-                this.orderList.forEach(item => {
+            getMyBuyGoods({ uid: this.$store.state.MyInfo.uid }).then(res => {
+                this.buyList = res.data.data
+                this.buyList.forEach(item => {
+                    item.createTime = dayjs(item.createTime).format('YYYY-MM-DD HH:mm:ss')
                     item.orderTime = dayjs(item.orderTime).format('YYYY-MM-DD HH:mm:ss')
                 })
             })
-        },
-        save(row) {
-            this.$confirm('是否确认交易', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                console.log(row);
-                agreeOver({ goodsId: row.goodsId, overId: row.overId }).then(() => {
-                    this.$message.success('交易成功')
-                    this.init()
-                })
-            })
-        },
-        refuse(row) {
-            this.$confirm('是否确认拒绝', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                refuseOver({ goodsId: row.goodsId, overId: row.overId }).then(() => {
-                    this.$message.success('拒绝成功')
-                    this.init()
-                })
-            })
-        },
-        finish(row) {
-            this.$confirm('是否确认完成订单', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                finishOver({ goodsId: row.goodsId, overId: row.overId }).then(() => {
-                    this.$message.success('完成订单成功')
-                    this.init()
-                })
-            })
         }
-
     },
     created() {
         this.init()

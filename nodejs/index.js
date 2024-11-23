@@ -885,7 +885,7 @@ app.post("/goods/updateGoods", upload.array("files"), async (req, res) => {
 // 商品详情
 app.post("/goods/detail", async (req, res) => {
   try {
-    const { goodsId } =  req.body;
+    const { goodsId } = req.body;
     const sql = `SELECT * FROM goods WHERE goodsId = ?`; //sql语句 搜索test表所有数据
     const result = await executeQuery(sql, [goodsId]);
     res.status(200).json({
@@ -900,25 +900,36 @@ app.post("/goods/detail", async (req, res) => {
 
 // 购买
 app.post("/goods/buy", async (req, res) => {
+  const overId = Math.floor(Math.random() * 1000000) + new Date().getTime();
   console.log(req.body);
-  const { goodsId, time, uid, form, change,shopId } = req.body;
+  const { goodsId, time, uid, form, change, shopId } = req.body;
 
   // 获取当前时间戳
   const createTime = new Date().getTime();
   // 如果 `time` 参数为空，处理为当前时间
-  const orderTime = time ? new Date(time).getTime() : createTime; 
+  const orderTime = time ? new Date(time).getTime() : createTime;
   console.log(createTime);
 
   const status = 0; // 购买状态
   // 如果 change 为真，保存表单数据，否则为空字符串
-  const orderAddress = change ? JSON.stringify(form) : '';
+  const orderAddress = change ? JSON.stringify(form) : "";
 
   try {
     const sql1 = `UPDATE goods SET status = 3 WHERE goodsId = ?`;
     const result1 = await executeQuery(sql1, [goodsId]); // 使用 sql1 来执行更新
     // 插入订单记录
-    const sql = 'INSERT INTO `over` (createTime, orderTime, orderAddress, status, userId, goodsId, shopId) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    const result = await executeQuery(sql, [createTime, orderTime, orderAddress, status, uid, goodsId, shopId]);
+    const sql =
+      "INSERT INTO `over` (createTime, orderTime, orderAddress, status, userId, goodsId, shopId, overId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    const result = await executeQuery(sql, [
+      createTime,
+      orderTime,
+      orderAddress,
+      status,
+      uid,
+      goodsId,
+      shopId,
+      overId,
+    ]);
 
     res.status(200).json({
       message: "购买成功",
@@ -934,8 +945,15 @@ app.post("/goods/buy", async (req, res) => {
 app.post("/goods/buyed", async (req, res) => {
   try {
     const { uid } = req.body;
-    const sql = 'SELECT * FROM `over` WHERE userId = ?'; //sql语句 搜索test表所有数据
+    const sql = "SELECT * FROM `over` WHERE userId = ?"; //sql语句 搜索test表所有数据
     const result = await executeQuery(sql, [uid]);
+    // 通过查到的goodsId获取商品信息
+    for (let i = 0; i < result.length; i++) {
+      const goodsId = result[i].goodsId;
+      const sql2 = "SELECT * FROM `goods` WHERE goodsId = ?"; //sql语句 搜索test表所有数据
+      const result2 = await executeQuery(sql2, [goodsId]);
+      result[i].goods = result2[0];
+    }
     res.status(200).json({
       message: "查询成功",
       data: result,
@@ -944,29 +962,82 @@ app.post("/goods/buyed", async (req, res) => {
     console.error("Error executing query:", error);
     res.status(500).send("Internal Server Error");
   }
-})
+});
 // 获取我卖出的
 app.post("/goods/sold", async (req, res) => {
   try {
     const { uid } = req.body;
-    const sql = 'SELECT * FROM `over` WHERE shopId = ?'; //sql语句 搜索test表所有数据
+    const sql = "SELECT * FROM `over` WHERE shopId = ?"; //sql语句 搜索test表所有数据
     const result = await executeQuery(sql, [uid]);
     // 通过查到的goodsId获取商品信息
     for (let i = 0; i < result.length; i++) {
       const goodsId = result[i].goodsId;
-      const sql2 = 'SELECT * FROM `goods` WHERE goodsId = ?'; //sql语句 搜索test表所有数据
+      const sql2 = "SELECT * FROM `goods` WHERE goodsId = ?"; //sql语句 搜索test表所有数据
       const result2 = await executeQuery(sql2, [goodsId]);
       result[i].goods = result2[0];
     }
     res.status(200).json({
       message: "查询成功",
       data: result,
-    })
-    } catch (error){
-      console.error("Error executing query:", error);
-      res.status(500).send("Internal Server Error");
-    }
-})
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+// 成交
+// 逻辑：将产品状态设置为4，订单状态设置为1
+app.post("/goods/over", async (req, res) => {
+  try {
+    const { goodsId, overId } = req.body;
+    const sql1 = `UPDATE goods SET status = 4 WHERE goodsId = ?`;
+    const result1 = await executeQuery(sql1, [goodsId]); // 使用 sql1 来执行更新
+    const sql2 = 'UPDATE `over` SET status = 1 WHERE overId = ?';
+    const result2 = await executeQuery(sql2, [overId]); // 使用 sql1 来执行更新
+    res.status(200).json({
+      message: "成交成功",
+      data: result2,
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+// 拒绝
+// 将产品设置为1，订单状态设置为2
+app.post("/goods/refuse", async (req, res) => {
+  try {
+    const { goodsId, overId } = req.body;
+    const sql1 = `UPDATE goods SET status = 1 WHERE goodsId = ?`;
+    const result1 = await executeQuery(sql1, [goodsId]); // 使用 sql1 来执行更新
+    const sql2 = 'UPDATE `over` SET status = 2 WHERE overId = ?';
+    const result2 = await executeQuery(sql2, [overId]); // 使用 sql1 来执行更新
+    res.status(200).json({
+      message: "成交成功",
+      data: result2,
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// 完成订单
+// 产品设置为4，订单状态为3
+app.post("/goods/finish", async (req, res) => {
+  try {
+    const { goodsId, overId } = req.body;
+    const sql2 = 'UPDATE `over` SET status = 3 WHERE overId = ?';
+    const result2 = await executeQuery(sql2, [overId]); // 使用 sql1 来执行更新
+    res.status(200).json({
+      message: "成交成功",
+      data: result2,
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 app.listen("3000", () => {
   console.log(`node服务已启动 端口号是：3000`);

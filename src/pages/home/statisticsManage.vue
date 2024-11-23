@@ -1,5 +1,7 @@
 <template>
-  123
+  <div class="statistics">
+    
+  </div>
 </template>
 
 <script>
