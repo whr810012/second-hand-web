@@ -2,7 +2,9 @@
   <div class="shop">
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="我的商品" name="first"></el-tab-pane>
-      <el-tab-pane label="我的订单" name="second">我的订单</el-tab-pane>
+      <el-tab-pane label="我的订单" name="second">
+        <my-order></my-order>
+      </el-tab-pane>
       <el-tab-pane label="我买到的" name="third">我买到的</el-tab-pane>
     </el-tabs>
     <Goods v-if="activeName == 'first'"></Goods>
@@ -11,10 +13,12 @@
 
 <script>
 import Goods from '@/components/goods/Goods'
+import MyOrder from '@/components/goods/MyOrder'
 export default {
   name: 'myGoods',
   components:{
-    Goods
+    Goods,
+    MyOrder
   },
   data() {
     return {

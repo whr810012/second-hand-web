@@ -171,3 +171,19 @@ export function editorGoods(data) {
     data
   })
 }
+
+export function buyGoods(data) {
+  return request({
+    url:"/goods/buy",
+    method:"POST",
+    data
+  })
+}
+
+export function getMyOrder(data) {
+  return request({
+    url:"/goods/sold",
+    method:"POST",
+    data
+  })
+}

@@ -898,6 +898,76 @@ app.post("/goods/detail", async (req, res) => {
   }
 });
 
+// 购买
+app.post("/goods/buy", async (req, res) => {
+  console.log(req.body);
+  const { goodsId, time, uid, form, change,shopId } = req.body;
+
+  // 获取当前时间戳
+  const createTime = new Date().getTime();
+  // 如果 `time` 参数为空，处理为当前时间
+  const orderTime = time ? new Date(time).getTime() : createTime; 
+  console.log(createTime);
+
+  const status = 0; // 购买状态
+  // 如果 change 为真，保存表单数据，否则为空字符串
+  const orderAddress = change ? JSON.stringify(form) : '';
+
+  try {
+    const sql1 = `UPDATE goods SET status = 3 WHERE goodsId = ?`;
+    const result1 = await executeQuery(sql1, [goodsId]); // 使用 sql1 来执行更新
+    // 插入订单记录
+    const sql = 'INSERT INTO `over` (createTime, orderTime, orderAddress, status, userId, goodsId, shopId) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const result = await executeQuery(sql, [createTime, orderTime, orderAddress, status, uid, goodsId, shopId]);
+
+    res.status(200).json({
+      message: "购买成功",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// 获取我买到的
+app.post("/goods/buyed", async (req, res) => {
+  try {
+    const { uid } = req.body;
+    const sql = 'SELECT * FROM `over` WHERE userId = ?'; //sql语句 搜索test表所有数据
+    const result = await executeQuery(sql, [uid]);
+    res.status(200).json({
+      message: "查询成功",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).send("Internal Server Error");
+  }
+})
+// 获取我卖出的
+app.post("/goods/sold", async (req, res) => {
+  try {
+    const { uid } = req.body;
+    const sql = 'SELECT * FROM `over` WHERE shopId = ?'; //sql语句 搜索test表所有数据
+    const result = await executeQuery(sql, [uid]);
+    // 通过查到的goodsId获取商品信息
+    for (let i = 0; i < result.length; i++) {
+      const goodsId = result[i].goodsId;
+      const sql2 = 'SELECT * FROM `goods` WHERE goodsId = ?'; //sql语句 搜索test表所有数据
+      const result2 = await executeQuery(sql2, [goodsId]);
+      result[i].goods = result2[0];
+    }
+    res.status(200).json({
+      message: "查询成功",
+      data: result,
+    })
+    } catch (error){
+      console.error("Error executing query:", error);
+      res.status(500).send("Internal Server Error");
+    }
+})
+
 app.listen("3000", () => {
   console.log(`node服务已启动 端口号是：3000`);
 });

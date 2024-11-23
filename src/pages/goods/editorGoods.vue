@@ -221,7 +221,7 @@ export default {
                     }
                 }
             }
-            editorGoods(formData).then(res =>{
+            editorGoods(formData).then(() =>{
                 this.$message.success('修改成功')
                 this.$router.push({name:'myGoods'})
             })
