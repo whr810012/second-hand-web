@@ -224,3 +224,12 @@ export function finishOver(data) {
     data
   })
 }
+
+// 获取所有订单
+export function getAllOrder(data) {
+  return request({
+    url:"/goods/allOrder",
+    method:"POST",
+    data
+  })
+}

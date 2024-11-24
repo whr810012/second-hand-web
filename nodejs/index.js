@@ -1039,6 +1039,29 @@ app.post("/goods/finish", async (req, res) => {
   }
 });
 
+// 获取所有订单
+app.post("/goods/allOrder", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM `over`"; //sql语句 搜索test表所有数据
+    const result = await executeQuery(sql);
+    // 通过查到的goodsId获取商品信息
+    for (let i = 0; i < result.length; i++) {
+      const goodsId = result[i].goodsId;
+      const sql2 = "SELECT * FROM `goods` WHERE goodsId = ?"; //sql语句 搜索test表所有数据
+      const result2 = await executeQuery(sql2, [goodsId]);
+      result[i].goods = result2[0];
+    }
+    res.status(200).json({
+      message: "查询成功",
+      data: result,
+    })
+    }
+    catch(error){
+      console.error("Error executing query:", error);
+      res.status(500).send("Internal Server Error")
+    }
+})
+
 app.listen("3000", () => {
   console.log(`node服务已启动 端口号是：3000`);
 });
