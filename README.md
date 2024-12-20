@@ -5,9 +5,9 @@
 npm install
 ```
 
-### Compiles and hot-reloads for development
+##因为前后端写在了一起，所以在此使用sh脚本启动项目，其他 不变
 ```
-npm run serve
+sh run.sh
 ```
 
 ### Compiles and minifies for production
