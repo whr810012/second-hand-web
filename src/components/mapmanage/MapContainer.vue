@@ -1,32 +1,83 @@
 <template>
   <div id="container"></div>
+  <el-dialog v-if="dialogFormVisible" v-model="dialogFormVisible" title="位置详情" width="700"
+    @close="dialogFormVisible = false; markerDetail = null">
+    <div style="height: 300px;width: 600px;overflow-y: auto;">
+      <el-form>
+        <el-form-item label="位置名称：">
+          {{ markerDetail?.name }}
+        </el-form-item>
+        <el-form-item label="类型：">
+          {{ markerDetail?.icon }}
+        </el-form-item>
+        <el-form-item label="详情：">
+          {{ markerDetail?.detail }}
+        </el-form-item>
+        <el-form-item label="距离：">
+          {{ getLength(markerDetail) }}千米
+        </el-form-item>
+        <el-form-item label="图片">
+          <div class="demo-image__preview">
+            <el-image
+              v-for="(item, index) in markerDetail?.filesJson"
+              :key="item.url"
+              style="width: 100px; height: 100px"
+              :src="item.url"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :initial-index="index"
+              fit="cover"
+            />
+          </div>
+        </el-form-item>
+      </el-form>
+    </div>
+  </el-dialog>
 </template>
 <script>
 import AMapLoader from "@amap/amap-jsapi-loader";
+import { space } from '@/utils/utils'
 import { getOptions, getMarkers } from "../../api/request.js";
 export default {
   name: "map-view",
   data() {
     return {
-      optionsList: []
+      optionsList: [],
+      markerList: [],
+      dialogFormVisible: false, 
+      classList: [
+        { value: '教学楼',icon: require('../../assets/教学楼.png')},
+        { value: '餐厅',icon: require('../../assets/食堂.png') },
+        { value: '宿舍',icon: require('../../assets/宿舍.png') },
+        { value: '操场',icon: require('../../assets/操场.png') },
+        { value: '图书馆',icon: require('../../assets/图书馆.png') },
+        { value: '电影院',icon: require('../../assets/电影院.png') },
+        { value: '校医院',icon: require('../../assets/校医院.png') },
+        { value: '博物馆',icon: require('../../assets/博物馆.png') },
+        { value: '学校',icon: require('../../assets/school.png') },
+      ],
     }
-  },
-  mounted() {
-    this.initAMap();
   },
   unmounted() {
     this.map?.destroy();
   },
-  async created() {
-    if (this.$route.name !== 'schoolMap') {
-      this.$store.commit("setBreadList", [{ title: '地图管理' }, { title: '预览' }]);
-    }
-    console.log('asd', this.$store.state.location);
-    await getMarkers().then((res) => {
-      this.markersList = res.data.data
-    })
+  computed :{
+    myLocation() { return localStorage.getItem('myLocation') },
   },
   methods: {
+    getLength (item) {
+      let myLocation = this.myLocation
+            myLocation = JSON.parse(myLocation)
+      return space(item.lat, item.lng, myLocation[1], myLocation[0])
+    },
+    openDia(item) {
+      if (item.icon == '学校') {
+        return
+      }
+      this.dialogFormVisible = true;
+      this.markerDetail = item;
+    },
     initAMap() {
       const that = this;
       AMapLoader.load({
@@ -74,40 +125,74 @@ export default {
               }
             }
           })
-          const marker = new AMap.Marker({
-            position: new AMap.LngLat(118.28752699999995, 35.12255099999999), //经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-            title: "临沂大学",
-          });
-          this.map.add(marker);
-          getOptions().then((res) => {
-            this.optionsList = res.data.data
-            console.log('zuobiap', this.optionsList);
-            let path = []
-            that.optionsList.map(iem => {
-              path.push(new AMap.LngLat(iem.lat, iem.lng))
-            })
-            var polygon = new AMap.Polygon({
-              path: path,
-              fillColor: '#fff', // 多边形填充颜色
-              borderWeight: 2, // 线条宽度，默认为 1
-              strokeColor: 'red', // 线条颜色
+          this.markersList.forEach(item => {
+            let image = this.classList.find(iem => iem.value === item.icon).icon
+            console.log();
+            const icon = new AMap.Icon({
+              size: new AMap.Size(32, 32),
+              image: image,
+              imageSize: new AMap.Size(32, 32),
             });
-
-            this.map.add(polygon);
-            console.log(this.map);
+            const marker = new AMap.Marker({
+              position: new AMap.LngLat(item.lat, item.lng),
+              title: item.name,
+              icon: icon,
+            })
+            marker.on('click', () => {
+              this.openDia(item)
+            });
+            this.map.add(marker)
           })
+          let path = []
+          this.optionsList.forEach(iem => {
+            path.push(new AMap.LngLat(iem.lat, iem.lng))
+          })
+          const polygon = new AMap.Polygon({
+            path: path,
+            fillColor: '#fff', // 多边形填充颜色
+            borderWeight: 2, // 线条宽度，默认为 1
+            strokeColor: 'red', // 线条颜色
+          });
+
+          this.map.add(polygon);
+          console.log(this.map);
         })
-        .catch((e) => {
-          console.log(e);
+        .catch(() => {
         });
     },
+  },
+  async created() {
+    if (this.$route.name !== 'schoolMap') {
+      this.$store.commit("setBreadList", [{ title: '地图管理' }, { title: '预览' }]);
+    }
+    console.log('asd', this.$store.state.location);
+    await getMarkers().then((res) => {
+      this.markersList = res.data.data
+      this.markersList.forEach((item) => {
+          item.filesJson = JSON.parse(item.filesJson);
+          item.filesJson.forEach((img) => {
+            const mimeType = img.contentType; // 根据实际情况选择 MIME 类型
+            img.url = `data:${mimeType};base64,${img.base64}`;
+          });
+        })
+        console.log(this.markersList);
+      this.markersList.push({
+        name: '临沂大学',
+        lat: 118.28752699999995,
+        lng: 35.12255099999999,
+        icon: '学校'
+      })
+    })
+    await getOptions().then((res) => {
+      this.optionsList = res.data.data
+    })
+    this.initAMap()
   },
 };
 </script>
 <style scoped>
 #container {
   width: 100%;
-  height: 600px;
-  max-height: 100%;
+  height: calc(100vh - 200px)
 }
 </style>
