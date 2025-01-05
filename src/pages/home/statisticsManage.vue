@@ -146,30 +146,38 @@ export default {
         this.timeOption.xAxis.data = result.map(item => item.time)
         this.timeOption.series[0].data = result.map(item => item.num)
         console.log('time', result);
+        this.initChart()
+      })
+    },
+    initChart() {
+      this.myChart = echarts.init(document.getElementById('proportionOption'))
+      this.$nextTick(() => {
         this.myChart.setOption(this.proportionOption)
+      })
+      this.myChart2 = echarts.init(document.getElementById('classProportionOption'))
+      this.$nextTick(() => {
         this.myChart2.setOption(this.classProportionOption)
+      })
+      this.myChart3 = echarts.init(document.getElementById('timeOption'))
+      this.$nextTick(() => {
         this.myChart3.setOption(this.timeOption)
       })
     }
   },
-  computed: {
-  },
   async created() {
     await this.init()
   },
-  mounted() {
-    this.myChart = echarts.init(document.getElementById('proportionOption'))
-    this.$nextTick(() => {
-      this.myChart.setOption(this.proportionOption)
-    })
-    this.myChart2 = echarts.init(document.getElementById('classProportionOption'))
-    this.$nextTick(() => {
-      this.myChart2.setOption(this.classProportionOption)
-    })
-    this.myChart3 = echarts.init(document.getElementById('timeOption'))
-    this.$nextTick(() => {
-      this.myChart3.setOption(this.timeOption)
-    })
+  // 离开页面清空
+  beforeUnmount() {
+    if (this.myChart) {
+      this.myChart.dispose()
+    }
+    if (this.myChart2) {
+      this.myChart2.dispose()
+    }
+    if (this.myChart3) {
+      this.myChart3.dispose()
+    }
   }
 }
 </script>

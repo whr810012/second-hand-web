@@ -11,6 +11,9 @@ export default {
   //   Mapview
   // }
   created() {
+    window._AMapSecurityConfig = {
+        securityJsCode: "638210509d7b98e8c4ca472ab5110203",
+      };
     const userInfo = localStorage.getItem('userInfo')
     if (userInfo) {
       this.$store.commit('setUserInfo', JSON.parse(userInfo))

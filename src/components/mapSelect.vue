@@ -23,11 +23,6 @@ export default {
     fetchSuggestions(query, callback) {
       // 清空列表
       this.list = [];
-
-      window._AMapSecurityConfig = {
-        securityJsCode: "638210509d7b98e8c4ca472ab5110203",
-      };
-
       AMapLoader.load({
         key: 'a05ab04a5dbe61ad2fad7b664790a18f',
         version: '2.0',
