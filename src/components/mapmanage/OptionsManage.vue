@@ -9,15 +9,15 @@
             @selection-change="handleSelectionChange">
             <el-table-column type="index" label="序号" width="120" align="center"></el-table-column>
             <el-table-column type="selection" :selectable="selectable" width="55" align="center" />
-            <el-table-column property="lat" label="经度" align="center" />
-            <el-table-column property="lng" label="维度" align="center" />
+            <el-table-column property="lng" label="经度" align="center" />
+            <el-table-column property="lat" label="纬度" align="center" />
         </el-table>
         <el-dialog v-if="dialogFormVisible" v-model="dialogFormVisible" title="添加轮廓图点位" width="500">
             <el-form :model="form">
-                <el-form-item label="经度 (lat):" :label-width="formLabelWidth">
+                <el-form-item label="经度 (lng):" :label-width="formLabelWidth">
                     <el-input v-model="form.lat" autocomplete="off" />
                 </el-form-item>
-                <el-form-item label="纬度 (lng):" :label-width="formLabelWidth">
+                <el-form-item label="纬度 (lat):" :label-width="formLabelWidth">
                     <el-input v-model="form.lng" autocomplete="off" />
                 </el-form-item>
             </el-form>

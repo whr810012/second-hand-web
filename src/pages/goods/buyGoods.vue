@@ -90,7 +90,7 @@ export default {
                 }
             }
             console.log(this.goodsDetail.lat, this.goodsDetail.lng, myLocation[1], myLocation[0]);
-            return space(this.goodsDetail.lat, this.goodsDetail.lng, myLocation[1], myLocation[0])
+            return space( this.goodsDetail.lng,this.goodsDetail.lat, myLocation[0], myLocation[1])
         }
     },
     methods: {

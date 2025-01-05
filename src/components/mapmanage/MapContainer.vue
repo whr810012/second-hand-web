@@ -68,8 +68,8 @@ export default {
   methods: {
     getLength (item) {
       let myLocation = this.myLocation
-            myLocation = JSON.parse(myLocation)
-      return space(item.lat, item.lng, myLocation[1], myLocation[0])
+      myLocation = JSON.parse(myLocation)
+      return space(item.lat, item.lng, myLocation[0], myLocation[1])
     },
     openDia(item) {
       if (item.icon == '学校') {

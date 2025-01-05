@@ -24,8 +24,8 @@
         width="55"
         align="center"
       />
-      <el-table-column property="lat" label="经度" align="center" />
-      <el-table-column property="lng" label="维度" align="center" />
+      <el-table-column property="lng" label="经度" align="center" />
+      <el-table-column property="lat" label="纬度" align="center" />
       <el-table-column property="name" label="名称" align="center" />
       <el-table-column property="icon" label="类型" align="center" />
       <el-table-column property="detail" label="详情" align="center">
@@ -51,10 +51,10 @@
       @close="form = {}"
     >
       <el-form :model="form">
-        <el-form-item label="经度 (lat):" :label-width="formLabelWidth">
+        <el-form-item label="经度 (lng):" :label-width="formLabelWidth">
           <el-input v-model="form.lat" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="纬度 (lng):" :label-width="formLabelWidth">
+        <el-form-item label="纬度 (lat):" :label-width="formLabelWidth">
           <el-input v-model="form.lng" autocomplete="off" />
         </el-form-item>
         <el-form-item label="名称:" :label-width="formLabelWidth">
