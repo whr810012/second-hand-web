@@ -80,105 +80,144 @@ export default {
   border: none;
   outline: none;
   width: 100%;
-  height: 40px;
+  height: 44px;
   font-size: 16px;
   border-radius: 40px;
-
+  background: linear-gradient(45deg, #40739e, #273c75);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(39, 60, 117, 0.3);
+  }
 }
 
 .login10 {
   overflow: hidden;
   height: 100vh;
   position: relative;
-  font-family: sans-serif;
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
   &-bg {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(-45deg, rgba(64, 115, 158, 1.0), rgba(39, 60, 117, 1.0));
-    background-size: cover;
+    background: linear-gradient(-45deg, #40739e, #273c75);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
     z-index: -100;
   }
 
   &-container {
-    background: rgba(255, 255, 255, .6);
-    margin: 60px auto 0;
-    width: 400px;
-    border-radius: 16px;
+    background: rgba(255, 255, 255, .9);
+    margin: 80px auto 0;
+    width: 420px;
+    border-radius: 20px;
     padding: 40px;
     display: flex;
     align-items: center;
     flex-direction: column;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .2);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, .2);
+    transition: all 0.3s ease;
 
-    border-top: 2px solid rgba(255, 255, 255, .3);
-    border-left: 2px solid rgba(255, 255, 255, .3);
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, .2);
+    &:hover {
+      transform: translateY(-5px);
+    }
 
     &-head {
-      font-size: 30px;
-      margin: 40px 0;
+      font-size: 32px;
+      font-weight: 600;
+      margin: 30px 0;
+      background: linear-gradient(45deg, #40739e, #273c75);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     &-wrap {
       width: 100%;
-      height: 40px;
-      background: rgba(245, 246, 250, 1.0);
+      height: 46px;
+      background: rgba(245, 246, 250, .8);
       border-radius: 40px;
       margin-bottom: 20px;
       display: grid;
       grid-template-columns: 15% 86%;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(245, 246, 250, 1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+      }
 
       input {
         outline: none;
         border: none;
         background: none;
         font-size: 16px;
+        color: #2c3e50;
 
         &::placeholder {
-          font-size: 16px;
+          font-size: 15px;
+          color: #95a5a6;
         }
       }
 
       i {
-        line-height: 40px;
+        line-height: 46px;
         text-align: center;
+        color: #7f8c8d;
       }
     }
 
     &-access {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       width: 100%;
       padding: 0 .4rem;
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
+      font-size: 14px;
+      color: #666;
+
+      input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
 
       span {
         margin-left: 8px;
       }
     }
 
-    &-action {
-      margin-bottom: 20px;
-    }
-
-    &-or {
-      margin-bottom: 20px;
-      display: flex;
-      width: 100%;
-
-      &:before,
-      &:after {
-        content: '';
-        border-bottom: 1px solid black;
-        flex: 1 1;
-        margin: auto;
-      }
-    }
-
     &-signup {
       margin: 20px 0;
+      font-size: 14px;
+      
+      a {
+        color: #40739e;
+        text-decoration: none;
+        font-weight: 600;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
+  }
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 </style>

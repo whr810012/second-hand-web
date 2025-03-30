@@ -52,8 +52,14 @@
         </div>
       </el-card>
     </div>
-    <div style="text-align: center; margin-top: 20px;display: flex;justify-content: center;" v-if="filterList.length > 10">
-      <el-pagination :current-page="currentPage" layout="total, prev, pager, next, jumper" :total="filterList.length"></el-pagination>
+    <div style="text-align: center; margin-top: 20px;display: flex;justify-content: center;" v-if="totalCount > 10">
+      <el-pagination 
+        :current-page.sync="currentPage" 
+        :page-size="pageSize"
+        layout="total, prev, pager, next, jumper" 
+        :total="totalCount"
+        @current-change="handleCurrentChange">
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -65,6 +71,7 @@ export default {
   data() {
     return {
       currentPage: 1,
+      pageSize: 8,
       allGoodsList: [],
       searchName: '',
       options: [
@@ -85,52 +92,81 @@ export default {
     }
   },
   computed: {
-    filterList() {
+    filteredList() {
       let list = this.allGoodsList.filter(item => {
         return item.status === 1
       });
+      
       if (this.searchName) {
         list = list.filter(item => {
           return item.name.includes(this.searchName)
         })
       }
+      
       if (this.condition) {
         list = list.filter(item => {
           return item.condition === this.condition
         })
       }
+      
       if (this.category) {
         list = list.filter(item => {
           return item.category === this.category
         })
       }
+      
       if (this.sort) {
         if (this.sort === 'priceAsc') {
-          list = list.sort((a, b) => {
-            return a.price - b.price
-          })
+          list = list.sort((a, b) => a.price - b.price)
         } else if (this.sort === 'priceDesc') {
-          list = list.sort((a, b) => {
-            return b.price - a.price
-          })
+          list = list.sort((a, b) => b.price - a.price)
         } else if (this.sort === 'timeAsc') {
-          list = list.sort((a, b) => {
-            return new Date(a.createTime) - new Date(b.createTime)
-          })
+          list = list.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
         } else if (this.sort === 'timeDesc') {
-          list = list.sort((a, b) => {
-            return new Date(b.createTime) - new Date(a.createTime)
-          })
+          list = list.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
         }
       }
-      list = list.slice((this.currentPage - 1) * 10, this.currentPage * 10)
-      console.log(list);
-      return list;
+      
+      return list
+    },
+    
+    totalCount() {
+      return this.filteredList.length
+    },
+    
+    filterList() {
+      const start = (this.currentPage - 1) * this.pageSize
+      const end = start + this.pageSize
+      return this.filteredList.slice(start, end)
     }
   },
   methods: {
     gotoBuy (item) {
       this.$router.push('/goods/buyGoods?goodsId=' + item.goodsId)
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    },
+    resetPagination() {
+      this.currentPage = 1
+    }
+  },
+  watch: {
+    searchName() {
+      this.resetPagination()
+    },
+    condition() {
+      this.resetPagination()
+    },
+    category() {
+      this.resetPagination()
+    },
+    sort() {
+      this.resetPagination()
     }
   },
   created() {
@@ -155,11 +191,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 5px;
 
   .search {
     margin: 10px;
     margin-right: 0px;
     width: 60%;
+    max-width: 600px;
   }
 
   /deep/.el-button {
@@ -173,58 +211,160 @@ export default {
 
 .filter-box {
   text-align: center;
+  border-radius: 8px;
 }
 
 .goods-box {
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  justify-content: center;
+  gap: 20px;
 
   .goods-card {
-    margin: 10px;
-    display: flex;
+    width: 300px;
+    height: 180px;
+    transition: all 0.3s;
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(73, 158, 255, 0.15);
+    }
+
+    /deep/ .el-card__body {
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      background: linear-gradient(to right, rgba(73, 158, 255, 0.05), transparent);
+    }
+
+    .el-image {
+      min-width: 120px !important;
+      height: 140px !important;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      object-fit: cover;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
 
     .goods-info {
-      margin-left: 10px;
+      margin-left: 15px;
+      flex: 1;
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
       .goods-name {
-        color: rgba($color: #499eff, $alpha: 0.6);
+        color: #333;
         font-size: 16px;
         font-weight: 600;
+        margin-bottom: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-height: 1.4;
+
+        &:hover {
+          color: #499eff;
+        }
       }
 
-      .goods-price {
-        // 删除线
-        text-decoration: line-through;
-        color: #565656;
+      .price-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 5px 0;
+
+        .goods-price {
+          text-decoration: line-through;
+          color: #999;
+          font-size: 13px;
+        }
+
+        .current-price {
+          color: #ff4d4f;
+          font-size: 16px;
+          font-weight: 600;
+        }
+      }
+
+      .goods-discount {
+        display: inline-block;
+        padding: 2px 8px;
+        background-color: #fff1f0;
+        border-radius: 4px;
+        color: #ff4d4f;
         font-size: 12px;
+        margin: 5px 0;
       }
 
       .class-box {
         font-size: 12px;
-        border: 1px solid #ccc;
-        padding: 2px 15px;
-        border-radius: 10px;
-        background-color: #63b1d6;
+        padding: 3px 12px;
+        border-radius: 15px;
+        background-color: #499eff;
+        color: white;
+        display: inline-block;
+        transition: all 0.3s;
+        
+        &:hover {
+          background-color: darken(#499eff, 10%);
+        }
       }
 
       .goods-condition {
-        margin-top:5px;
-        // 最多显示两行
+        margin-top: 8px;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: #565656;
+        color: #666;
         font-size: 12px;
+        line-height: 1.5;
+        background-color: rgba(73, 158, 255, 0.05);
+        padding: 4px 8px;
+        border-radius: 4px;
       }
     }
   }
 }
 
-/deep/.el-card__body {
-  display: flex;
+/deep/ .el-pagination {
+  margin-top: 30px;
+  padding: 15px 0;
+  
+  .el-pager li {
+    border-radius: 4px;
+    transition: all 0.3s;
+    
+    &.active {
+      background-color: #499eff;
+      font-weight: bold;
+    }
+    
+    &:hover:not(.active) {
+      color: #499eff;
+    }
+  }
+  
+  .btn-prev, .btn-next {
+    border-radius: 4px;
+    
+    &:hover {
+      color: #499eff;
+    }
+  }
 }
 </style>

@@ -124,6 +124,15 @@ const routes = [
         component:buyGoods,
       }
     ]
+  },
+  {
+    path: '/navigation',
+    name: 'navigation',
+    component: () => import('@/pages/navigation/index.vue'),
+    props: route => ({ 
+      from: route.query.from,
+      to: route.query.to 
+    })
   }
 ];
 

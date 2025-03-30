@@ -258,28 +258,63 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.goodsInfo {
+.buyGoods {
+  .goodsInfo {
     padding: 20px;
-    background-color: #f5f5f5;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+    margin: 20px;
 
     .title {
-        color: #11192d;
-        font-family: PingFangSC-Semibold;
-        font-size: 20px;
-        font-weight: 600;
-        letter-spacing: 0;
-        line-height: 30px;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        display: -webkit-box;
+      color: #303133;
+      font-family: PingFangSC-Semibold;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 32px;
+      margin-bottom: 15px;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      display: -webkit-box;
     }
 
     .goods-detail-item {
-        padding-top: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid #ebeef5;
+      font-size: 14px;
+      color: #606266;
 
-        .item-title {
-            color: #464646;
-        }
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .item-title {
+        color: #909399;
+        margin-right: 8px;
+        font-weight: 500;
+      }
     }
+  }
+
+  :deep(.el-carousel) {
+    padding: 20px;
+    
+    .el-carousel__item {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  }
+
+  .el-button {
+    padding: 12px 30px;
+    font-size: 16px;
+  }
+
+  .el-dialog {
+    .el-form-item {
+      margin-top: 15px;
+    }
+  }
 }
 </style>

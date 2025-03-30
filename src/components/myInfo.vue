@@ -12,6 +12,7 @@
                 <el-dropdown-menu>
                     <el-dropdown-item @click="gotoMyInfo">个人中心</el-dropdown-item>
                     <el-dropdown-item @click="gotoGoods">去购物</el-dropdown-item>
+                    <el-dropdown-item v-if="MyInfo.isadmin" @click="gotoAdmin">后台管理</el-dropdown-item>
                     <el-dropdown-item @click="gotoLogin">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
             </template>
@@ -59,6 +60,9 @@ export default {
         },
         gotoGoods(){
             this.$router.push({ name: `goods` })
+        },
+        gotoAdmin() {
+            this.$router.push({ name: `/admin` })
         }
     },
     created() {

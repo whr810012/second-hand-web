@@ -31,6 +31,9 @@
             />
           </div>
         </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="goToNavigation">导航</el-button>
+        </el-form-item>
       </el-form>
     </div>
   </el-dialog>
@@ -39,6 +42,7 @@
 import AMapLoader from "@amap/amap-jsapi-loader";
 import { space } from '@/utils/utils'
 import { getOptions, getMarkers } from "../../api/request.js";
+
 export default {
   name: "map-view",
   data() {
@@ -160,6 +164,24 @@ export default {
         .catch(() => {
         });
     },
+    goToNavigation() {
+      // 获取当前位置和目标位置
+      const myLocation = JSON.parse(this.myLocation);
+      const destination = {
+        lat: this.markerDetail.lat,
+        lng: this.markerDetail.lng,
+        name: this.markerDetail.name
+      };
+      
+      // 修改路由跳转方式
+      this.$router.push({
+        path: '/navigation',  // 使用 path 而不是 name
+        query: {
+          from: JSON.stringify([myLocation[0], myLocation[1]]),
+          to: JSON.stringify(destination)
+        }
+      });
+    },
   },
   async created() {
     if (this.$route.name !== 'schoolMap') {
@@ -193,6 +215,6 @@ export default {
 <style scoped>
 #container {
   width: 100%;
-  height: calc(100vh - 200px)
+  height: calc(100vh - 100px)
 }
 </style>
